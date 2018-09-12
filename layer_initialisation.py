@@ -3,9 +3,9 @@ from forest_functions import GetTreeSplits, GetChildren
 import pdb
 
 
-def InitFirstLayer(rf, strength01 = 1000.0):
+def InitFirstLayer(modelI, strength01 = 1000.0):
     """
-    Given a fitted random regression forest model rf, this function returns
+    Given a fitted random regression forest model modelI, this function returns
     initialisation parameters for the first hidden layer of a neural net that
     mimics the random forest's prediction behaviour.
     - strength01 is a hyperparameter that determines how strongly the discrete
@@ -13,13 +13,12 @@ def InitFirstLayer(rf, strength01 = 1000.0):
     """
 
     # extract tree parameters
-    trees, featurelist, threshlist = GetTreeSplits(rf)
-    pdb.set_trace()
-    listcl, listcr = GetChildren(trees)
+    trees, featurelist, threshlist = modelI.GetTreeSplits()
+    listcl, listcr = modelI.GetChildren()
 
     # layer sizes
     HL1N = sum( [np.sum(tree.feature != -2) for tree in trees] )
-    n_inputs = rf.n_features_
+    n_inputs = modelI.n_features_
 
     # initialise first layer parameters
     W1 = np.zeros( [n_inputs, HL1N], dtype = 'float32')
@@ -120,16 +119,17 @@ def GetTreePaths(trees):
 
 
 #nodelist is from HL1
-def InitSecondLayer(rf, nodelist, strength12=0.1,  L2param=0.8):
+def InitSecondLayer(modelI, nodelist, strength12=0.1,  L2param=0.8):
     """
-    Given a fitted random regression forest model rf,
+    Given a fitted random regression forest model modelI,
     a nodelist from the previous layer initialisation and hyperparameters,
     this function returns initialisation parameters for the second hidden layer
     of a neural net that mimics the random forest's prediction behaviour.
     """
 
     # extract tree paths
-    trees = [rf.estimators_[i].tree_ for i in range(rf.n_estimators) ]
+    # trees = [modelI.estimators_[i].tree_ for i in range(modelI.n_estimators) ]
+    trees = modelI.trees
     jointsplitindlists, jointsplitorderlists = GetTreePaths(trees)
 
     # layer sizes
@@ -176,17 +176,18 @@ def InitSecondLayer(rf, nodelist, strength12=0.1,  L2param=0.8):
 
 
 
-def InitThirdLayer(rf, leaf_neurons):
+def InitThirdLayer(modelI, leaf_neurons):
     """
-    Given a fitted random regression forest model rf,
+    Given a fitted random regression forest model modelI,
     and a list of leaf_neurons from the previous layer initialisation,
     this function returns initialisation parameters for the third output layer
     of a neural net that mimics the random forest's prediction behaviour.
     """
 
 
-    trees = [rf.estimators_[i].tree_ for i in range(rf.n_estimators) ]
-    ntrees = rf.n_estimators
+    # trees = [modelI.estimators_[i].tree_ for i in range(modelI.n_estimators) ]
+    trees = modelI.trees
+    ntrees = len(trees) # modelI.n_estimators
 
     # layer size
     HL2N = sum( [np.sum(tree.feature == -2) for tree in trees] )

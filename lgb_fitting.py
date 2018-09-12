@@ -64,4 +64,4 @@ def TrainGBDT(data, lr, num_trees, maxleaf, verbose=True):
     else:
         preds = preds.reshape(-1,1)
     preds = preds.astype(np.float32)
-    return gbm, preds
+    return gbm.dump_model(), preds

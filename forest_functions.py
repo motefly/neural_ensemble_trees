@@ -18,8 +18,6 @@ def GetTreeSplits(rf):
         trees.append(forest[i].tree_)
         featurelist.append(np.asarray(trees[i].feature))
         threshlist.append(np.asarray(trees[i].threshold))
-    import pdb
-    pdb.set_trace()
     return (trees, featurelist, threshlist)
 
 

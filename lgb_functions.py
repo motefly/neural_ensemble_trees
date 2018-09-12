@@ -36,8 +36,8 @@ def GetItemByTree(tree, item='feature'):
                 cur += 1
     return res
 
-def GetTreeSplits(gbm):
-    model = gbm.dump_model()
+def GetTreeSplits(model):
+    # model = gbm.dump_model()
     featurelist = []
     threhlist = []
     trees = model['tree_info']

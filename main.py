@@ -2,6 +2,7 @@ import numpy as np
 import sys
 from dataloader import load_data
 from forest_fitting import fit_random_forest
+from lgb_fitting import TrainGBDT
 from feedforward import run_neural_net
 from initialiser import get_network_initialisation_parameters
 from individually_trained import individually_trained_networks
@@ -11,7 +12,7 @@ np.random.seed(42)
 np.set_printoptions(precision=4, suppress=True)
 
 
-def neural_random_forest(dataset_name="mpg"):
+def neural_random_forest(dataset_name="mpg", tree_model='lightgbm'):
     """
     Takes a regression dataset name, and trains/evaluates 4 classifiers:
     - a random forest
@@ -37,10 +38,13 @@ def neural_random_forest(dataset_name="mpg"):
     depth = 6
 
     # train a random regression forest model
-    rf, rf_results = fit_random_forest(data, ntrees, depth, verbose=False)
+    if tree_model == 'randomforest':
+        model, model_results = fit_random_forest(data, ntrees, depth, verbose=False)
+    else:
+        model, model_results = TrainGBDT(data, lr=lr, num_trees=ntrees, maxleaf=maxleaf)
 
-    # derive initial neural network parameters from the trained rf model
-    init_parameters = get_network_initialisation_parameters(rf)
+    # derive initial neural network parameters from the trained trees model
+    init_parameters = get_network_initialisation_parameters(model, tree_model=tree_model)
 
     # determine layer size for layers 1 and 2 in the 2-layer MLP
     HL1N, HL2N = init_parameters[2].shape
@@ -49,8 +53,8 @@ def neural_random_forest(dataset_name="mpg"):
     NN2,_ = run_neural_net(data, init_parameters=None, HL1N=HL1N, HL2N=HL2N, verbose=False)
 
     # train many small networks individually, initial weights from a decision tree (method 1)
-    method1_full,_  = individually_trained_networks(data, ntrees, depth, keep_sparse=False, verbose=False)
-    method1_sparse,_ = individually_trained_networks(data, ntrees, depth, keep_sparse=True, verbose=False)
+    method1_full,_  = individually_trained_networks(data, ntrees, depth, keep_sparse=False, verbose=False, tree_model=tree_model)
+    method1_sparse,_ = individually_trained_networks(data, ntrees, depth, keep_sparse=True, verbose=False, tree_model=tree_model)
 
     # train one large network with sparse initial weights from random forest parameters (method 2)
     method2_full,_ = run_neural_net(data, init_parameters, verbose=False, forest=rf, keep_sparse=False)
@@ -73,7 +77,9 @@ def neural_random_forest(dataset_name="mpg"):
 if __name__ == "__main__":
     args = sys.argv
     if len(args) > 1:
-        dataset = args[1]
+        dataset = args[-2]
+        tree_model = args[-1]
     else:
         dataset = "mpg"
-    _ = neural_random_forest(dataset)
+        tree_model = 'lightgbm'
+    _ = neural_random_forest(dataset, tree_model)
