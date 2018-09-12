@@ -1,6 +1,6 @@
 ## Neural Ensemble Trees
 
-This repo is improved from [neural random forest](https://github.com/JohannesMaxWel/neural_random_forests). Thanks the author a lot!
+This repository is improved from [neural random forest](https://github.com/JohannesMaxWel/neural_random_forests). Thanks the original author a lot!
 
 Relevant paper:
 [Neural Random Forests](https://arxiv.org/abs/1604.07143).
