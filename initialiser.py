@@ -8,6 +8,7 @@ class modelInterpreter(object):
             from forest_functions import GetTreeSplits, GetChildren
             self.n_features_ = model.n_features_
         else:
+            model = model.dump_model()
             from lgb_functions import GetTreeSplits, GetChildren
             self.n_features_ = model['max_feature_idx'] + 1
         self.trees, self.featurelist, self.threshlist = GetTreeSplits(model)

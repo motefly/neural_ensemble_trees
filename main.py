@@ -57,11 +57,11 @@ def neural_random_forest(dataset_name="mpg", tree_model='lightgbm'):
     method1_sparse,_ = individually_trained_networks(data, ntrees, depth, keep_sparse=True, verbose=False, tree_model=tree_model)
 
     # train one large network with sparse initial weights from random forest parameters (method 2)
-    method2_full,_ = run_neural_net(data, init_parameters, verbose=False, forest=rf, keep_sparse=False)
-    method2_sparse,_ = run_neural_net(data, init_parameters, verbose=False, forest=rf, keep_sparse=True)
+    method2_full,_ = run_neural_net(data, init_parameters, verbose=False, forest=model, keep_sparse=False)
+    method2_sparse,_ = run_neural_net(data, init_parameters, verbose=False, forest=model, keep_sparse=True)
 
     results = {
-        "RF": rf_results[2],
+        "RF": model_results[2],
         "NN2": NN2,
         "NRF1 full": method1_full,
         "NRF1 sparse": method1_sparse,
