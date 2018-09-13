@@ -30,6 +30,49 @@ def GetChildren(trees):
     return(listcl, listcr)
 
 
+def GetTreePaths(trees):
+    # List of lists containing the node indices for all paths through all trees
+    jointsplitindlists = []
+    # Litt of lists containing all path orders (left/right) through all trees
+    jointsplitorderlists = []
+
+    # lists of left and right children
+    listcl, listcr = GetChildren(trees)
+
+    for i in range(len(trees)):
+        paths, orders = [], []
+        cl = listcl[i].tolist()
+        cr = listcr[i]
+
+        leaf_nodes = np.where(cr == -1)[0].tolist()
+        cr = cr.tolist()
+
+        # for every leaf node get the path that led to it.
+        for leaf in leaf_nodes:
+            path, order = [], []
+            c = leaf
+            while c != 0:
+                #find mother node of c
+                if c in cl:
+                    mother = cl.index(c)
+                    direction = -1
+                else:
+                    mother = cr.index(c)
+                    direction = +1
+                c = mother
+                path.append(c)
+                order.append(direction)
+
+            path.reverse()
+            order.reverse()
+            paths.append(path)
+            orders.append(order)
+
+        jointsplitindlists.append(paths)
+        jointsplitorderlists.append(orders)
+
+    return jointsplitindlists, jointsplitorderlists
+
 
 def GetActiveNodes(sample,featurelist, threshlist, trees):
     #returns a list over all trees with all corresponding active nodes

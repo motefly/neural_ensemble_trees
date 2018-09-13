@@ -18,6 +18,7 @@ def InitFirstLayer(modelI, strength01 = 1000.0):
 
     # layer sizes
     HL1N = sum( [np.sum(tree.feature != -2) for tree in trees] )
+    # HL1N = sum( [np.sum(feature != -2) for feature in featurelist] )
     n_inputs = modelI.n_features_
 
     # initialise first layer parameters
@@ -72,14 +73,16 @@ def InitFirstLayer(modelI, strength01 = 1000.0):
 
 
 
-def GetTreePaths(trees):
+def GetTreePaths(modelI):
     # List of lists containing the node indices for all paths through all trees
     jointsplitindlists = []
     # Litt of lists containing all path orders (left/right) through all trees
     jointsplitorderlists = []
 
     # lists of left and right children
-    listcl, listcr = GetChildren(trees)
+    # listcl, listcr = GetChildren(trees)
+    trees, featurelist, threshlist = modelI.GetTreeSplits()
+    listcl, listcr = modelI.GetChildren()
 
     for i in range(len(trees)):
         paths, orders = [], []
@@ -130,7 +133,7 @@ def InitSecondLayer(modelI, nodelist, strength12=0.1,  L2param=0.8):
     # extract tree paths
     # trees = [modelI.estimators_[i].tree_ for i in range(modelI.n_estimators) ]
     trees = modelI.trees
-    jointsplitindlists, jointsplitorderlists = GetTreePaths(trees)
+    jointsplitindlists, jointsplitorderlists = GetTreePaths(modelI)
 
     # layer sizes
     HL1N = sum( [np.sum(tree.feature != -2) for tree in trees] )
@@ -201,7 +204,11 @@ def InitThirdLayer(modelI, leaf_neurons):
         leaf_ind = np.where(trees[i].feature ==-2)
 
         # get the regression value for each of those leaves
-        leaf_values = [e[0][0] for e in trees[i].value[leaf_ind].tolist()]
+        # pdb.set_trace()
+        if modelI.tree_model == 'randomforest':
+            leaf_values = [e[0][0] for e in trees[i].value[leaf_ind].tolist()]
+        else:
+            leaf_values = [e for e in trees[i].value[leaf_ind].tolist()]
 
         # HL2 neurons corresponding to tree i
         tree_neurons = leaf_neurons[i]

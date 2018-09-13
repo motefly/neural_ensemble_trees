@@ -1,7 +1,7 @@
 import numpy as np
 import lightgbm as lgb
 
-def TrainGBDT(data, lr, num_trees, maxleaf, verbose=True):
+def TrainGBDT(data, lr, num_trees, maxleaf, mindata, verbose=True):
     """
     Fits a light_gbm to some data and returns the model.
     """
@@ -37,7 +37,7 @@ def TrainGBDT(data, lr, num_trees, maxleaf, verbose=True):
         'objective': objective,
         'metric': metric,
         'num_leaves': maxleaf,
-        'min_data': 40,
+        'min_data': mindata,
         'boost_from_average': boost_from_average,
         'num_threads': 6,
         'feature_fraction': 0.8,
@@ -64,4 +64,5 @@ def TrainGBDT(data, lr, num_trees, maxleaf, verbose=True):
     else:
         preds = preds.reshape(-1,1)
     preds = preds.astype(np.float32)
-    return gbm, preds
+    score_test = np.sqrt( np.mean (np.square(preds-np.squeeze(test_y) ) )  )
+    return gbm, (None, None, score_test)
