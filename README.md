@@ -3,7 +3,9 @@
 This repository is improved from [neural random forest](https://github.com/JohannesMaxWel/neural_random_forests). Thanks the original author a lot!
 
 Relevant paper:
+
 [Neural Random Forests](https://arxiv.org/abs/1604.07143).
+
 Based on it, we add [LightGBM](https://github.com/Microsoft/LightGBM) model in the framework and impove the performance a lot.
 
 ## Requirements
