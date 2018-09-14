@@ -8,7 +8,7 @@ from initialiser import get_network_initialisation_parameters
 from individually_trained import individually_trained_networks
 
 # set seed and printoptions.
-np.random.seed(42)
+np.random.seed(44)
 np.set_printoptions(precision=4, suppress=True)
 
 

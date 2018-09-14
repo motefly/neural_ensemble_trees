@@ -1,6 +1,7 @@
 import numpy as np
 import tensorflow as tf
 from tensorflow.python.framework import ops
+tf.set_random_seed(42)
 
 
 def define_forward_pass(X, init_parameters, n_inputs, HL1N, HL2N, sigma=1.0,

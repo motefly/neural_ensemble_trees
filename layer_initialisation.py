@@ -15,7 +15,6 @@ def InitFirstLayer(modelI, strength01 = 1000.0):
     # extract tree parameters
     trees, featurelist, threshlist = modelI.GetTreeSplits()
     listcl, listcr = modelI.GetChildren()
-    # pdb.set_trace()
     # layer sizes
     HL1N = sum( [np.sum(tree.feature != -2) for tree in trees] )
     # HL1N = sum( [np.sum(feature != -2) for feature in featurelist] )
@@ -184,7 +183,6 @@ def InitSecondLayer(modelI, nodelist, strength12=0.1,  L2param=0.8):
 
         #append HL2-neuron-indices used in tree i.
         leaf_neurons.append(neurons_used)
-        # pdb.set_trace()
 
         # set input weights and biases for second layer
         scndlayercount = 0
@@ -225,7 +223,6 @@ def InitThirdLayer(modelI, leaf_neurons):
         leaf_ind = np.where(trees[i].feature ==-2)
 
         # get the regression value for each of those leaves
-        # pdb.set_trace()
         if modelI.tree_model == 'randomforest':
             leaf_values = [e[0][0] for e in trees[i].value[leaf_ind].tolist()]
         else:
@@ -233,7 +230,6 @@ def InitThirdLayer(modelI, leaf_neurons):
 
         # HL2 neurons corresponding to tree i
         tree_neurons = leaf_neurons[i]
-        # pdb.set_trace()
 
         # compute  weights to output layer
         for k in range(len(leaf_values)):
