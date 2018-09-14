@@ -10,7 +10,7 @@ def TrainGBDT(data, lr, num_trees, maxleaf, mindata, verbose=True):
 
     train_x, valid_x, test_x, train_y, valid_y, test_y = data
     objective = "regression"
-    metric = "mse"
+    metric = "rmse"
     num_class = 1
     boost_from_average = True
     n_class = train_y.shape[1]

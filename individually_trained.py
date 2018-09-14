@@ -8,7 +8,7 @@ from feedforward import run_neural_net
 from tensorflow.python.framework import ops
 
 
-def individually_trained_networks(data, ntrees, depth, keep_sparse=False, verbose=True, tree_model='lightgbm'):
+def individually_trained_networks(data, ntrees, depth, keep_sparse=False, verbose=True):
     """
     Method 1. Trains ntree single MLPs independently, each with the initialisation
     of a single tree from a random forest.
@@ -55,7 +55,7 @@ def individually_trained_networks(data, ntrees, depth, keep_sparse=False, verbos
         RF_score_v = np.sqrt( np.mean (np.square(diff_v) )  )
 
         # extract network initialisation parameters for network based on one tree
-        init_parameters = get_network_initialisation_parameters(rf, tree_model=tree_model)
+        init_parameters = get_network_initialisation_parameters(rf)
 
         # train network
         RMSE, pred = run_neural_net(data, init_parameters,

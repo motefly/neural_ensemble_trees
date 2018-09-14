@@ -15,7 +15,7 @@ def InitFirstLayer(modelI, strength01 = 1000.0):
     # extract tree parameters
     trees, featurelist, threshlist = modelI.GetTreeSplits()
     listcl, listcr = modelI.GetChildren()
-
+    # pdb.set_trace()
     # layer sizes
     HL1N = sum( [np.sum(tree.feature != -2) for tree in trees] )
     # HL1N = sum( [np.sum(feature != -2) for feature in featurelist] )
@@ -41,32 +41,51 @@ def InitFirstLayer(modelI, strength01 = 1000.0):
         nlist = np.zeros([nodeCount, 1])  # for each treenode save a neuronindex
 
         # go through all tree nodes in tree i
-        while currentsplit < nodeCount:
-            """
-            Interpretation help:
-            #active with (+1) if Wx>b 	<==> active (+1) when split to the right
-            #active with (-1) if Wx<=b	<==> active (-1) when split to the left.
-            """
 
-            # What to do here: set weight and bias for current HL1 neuron
-            if featurelist[i][currentsplit] != -2:   #not leaf node
-                W1[featurelist[i][currentsplit], currentnode] = 1.0 * strength01
-                b1[currentnode] = -threshlist[i][currentsplit] * strength01
+        def DFS(root, nlist, currentnode):
+            # print(root, currentnode)
+            if featurelist[i][root] != -2:   #not leaf node
+                W1[featurelist[i][root], currentnode] = 1.0 * strength01
+                b1[currentnode] = -threshlist[i][root] * strength01
 
                 # store relationship from tree split index to HL1 neuron index
-                nlist[currentsplit] = currentnode
+                nlist[root] = currentnode
                 currentnode += 1
-
             # Where to go next: identify next node in tree (depth first)
-            if cl[currentsplit] != -1: #( -1 means: empty child)
-                currentsplit = cl[currentsplit]
-            elif cr[currentsplit] != -1 :
-                currentsplit = cr[currentsplit]
-            else :
-                currentsplit += 1
-                #move to parent and next branch
+            if cl[root] != -1: #( -1 means: empty child)
+                currentnode = DFS(cl[root], nlist, currentnode)
+            if cr[root] != -1 :
+                currentnode = DFS(cr[root], nlist, currentnode)
+            return currentnode
+        currentnode = DFS(0, nlist, currentnode)
+        # while currentsplit < nodeCount:
+        #     """
+        #     Interpretation help:
+        #     #active with (+1) if Wx>b 	<==> active (+1) when split to the right
+        #     #active with (-1) if Wx<=b	<==> active (-1) when split to the left.
+        #     """
+
+        #     print(currentsplit)
+        #     # What to do here: set weight and bias for current HL1 neuron
+        #     if featurelist[i][currentsplit] != -2:   #not leaf node
+        #         W1[featurelist[i][currentsplit], currentnode] = 1.0 * strength01
+        #         b1[currentnode] = -threshlist[i][currentsplit] * strength01
+
+        #         # store relationship from tree split index to HL1 neuron index
+        #         nlist[currentsplit] = currentnode
+        #         currentnode += 1
+
+        #     # Where to go next: identify next node in tree (depth first)
+        #     if cl[currentsplit] != -1: #( -1 means: empty child)
+        #         currentsplit = cl[currentsplit]
+        #     elif cr[currentsplit] != -1 :
+        #         currentsplit = cr[currentsplit]
+        #     else :
+        #         currentsplit += 1
+        #         #move to parent and next branch
 
         nodelist.append(nlist) #saving list of neurons corresponding to tree i.
+        # pdb.set_trace()
 
     return W1, b1, nodelist
 
@@ -87,10 +106,11 @@ def GetTreePaths(modelI):
     for i in range(len(trees)):
         paths, orders = [], []
         cl = listcl[i].tolist()
-        cr = listcr[i]
+        cr = listcr[i].tolist()
 
-        leaf_nodes = np.where(cr == -1)[0].tolist()
-        cr = cr.tolist()
+        leaf_nodes = np.where(trees[i].feature ==-2)[0].tolist()
+        # leaf_nodes = np.where(cr == -1)[0].tolist()
+        # cr = cr.tolist()
 
         # for every leaf node get the path that led to it.
         for leaf in leaf_nodes:
@@ -164,6 +184,7 @@ def InitSecondLayer(modelI, nodelist, strength12=0.1,  L2param=0.8):
 
         #append HL2-neuron-indices used in tree i.
         leaf_neurons.append(neurons_used)
+        # pdb.set_trace()
 
         # set input weights and biases for second layer
         scndlayercount = 0
@@ -212,12 +233,12 @@ def InitThirdLayer(modelI, leaf_neurons):
 
         # HL2 neurons corresponding to tree i
         tree_neurons = leaf_neurons[i]
+        # pdb.set_trace()
 
-        #compute  weights to output layer
+        # compute  weights to output layer
         for k in range(len(leaf_values)):
             if modelI.tree_model == 'randomforest':
                 W3[tree_neurons[k]] = leaf_values[k] / float(ntrees) * 0.5
             else:
                 W3[tree_neurons[k]] = leaf_values[k] * 0.5
-
     return W3

@@ -21,7 +21,7 @@ def GetItemByTree(tree, item='split_feature'):
     root = tree.raw['tree_structure']
     split_nodes = tree.split_nodes
     res = np.zeros(split_nodes+tree.raw['num_leaves'], dtype=np.int8)
-    if 'value' in item:
+    if 'value' in item or 'threshold' in item:
         res = res.astype(np.float64)
     def getFeature(root, res):
         if 'child' in item:
@@ -80,7 +80,7 @@ class treeInterpreter(object):
     def __init__(self, tree):
         self.raw = tree
         self.split_nodes = CountSplitNodes(tree)
-        self.node_count = self.split_nodes + tree['num_leaves']
+        self.node_count = self.split_nodes# + tree['num_leaves']
         self.value = GetItemByTree(self, item='value')
         self.feature = GetItemByTree(self)
         # self.leaf_value = GetLeafValue(tree)

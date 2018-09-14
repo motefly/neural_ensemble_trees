@@ -153,6 +153,8 @@ def run_neural_net(data, init_parameters=None, HL1N=20, HL2N=10, n_layers=2,
                 #feed in training data minibatch-wise
                 sess.run(optimiser, feed_dict = {X: XTrain[start:end], \
                                                 Y: YTrain[start:end]})
+                # import pdb
+                # pdb.set_trace()
 
             pred_train = sess.run(prediction, feed_dict={X: XTrain, Y: YTrain})
             pred_valid = sess.run(prediction, feed_dict={X: XValid, Y: YValid})
