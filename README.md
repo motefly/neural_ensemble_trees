@@ -15,6 +15,7 @@ First, let's make sure you have all packages needed:
 ```
 pip3 install -r requirements.txt
 ```
+Noticed that the newest version (installed from github source code) of LightGBM is needed and can't installed by pip temporarily!
 
 
 ## Quick Start
