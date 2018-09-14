@@ -4,6 +4,7 @@ This repository is improved from [neural random forest](https://github.com/Johan
 
 Relevant paper:
 [Neural Random Forests](https://arxiv.org/abs/1604.07143).
+Based on it, we add [LightGBM](https://github.com/Microsoft/LightGBM) model in the framework and impove the performance a lot.
 
 ## Requirements
 This code is based on python3 and uses tensorflow 1.3.0.
