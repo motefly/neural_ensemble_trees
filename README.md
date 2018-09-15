@@ -27,7 +27,7 @@ sh download.sh
 
 To run different Neural Random Forest models on the mpg dataset, execute this (takes ~2min) from the repository root directory:
 ```
-python3 main.py mpg
+python3 main.py mpg randomforest/lightgbm
 ```
 
 ## Other Datasets
