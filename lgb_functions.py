@@ -20,7 +20,7 @@ def CountSplitNodes(tree):
 def GetItemByTree(tree, item='split_feature'):
     root = tree.raw['tree_structure']
     split_nodes = tree.split_nodes
-    res = np.zeros(split_nodes+tree.raw['num_leaves'], dtype=np.int8)
+    res = np.zeros(split_nodes+tree.raw['num_leaves'], dtype=np.int32)
     if 'value' in item or 'threshold' in item:
         res = res.astype(np.float64)
     def getFeature(root, res):
