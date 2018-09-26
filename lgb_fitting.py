@@ -10,7 +10,7 @@ def TrainGBDT(data, lr, num_trees, maxleaf, mindata, verbose=True):
 
     train_x, valid_x, test_x, train_y, valid_y, test_y = data
     objective = "regression"
-    metric = "rmse"
+    metric = "mse"
     num_class = 1
     boost_from_average = True
     n_class = train_y.shape[1]
@@ -64,7 +64,7 @@ def TrainGBDT(data, lr, num_trees, maxleaf, mindata, verbose=True):
     else:
         preds = preds.reshape(-1,1)
     preds = preds.astype(np.float32)
-    score_train = np.sqrt( np.mean (np.square(preds-np.squeeze(train_y) ) )  )
+    # score_train = np.sqrt( np.mean (np.square(preds-np.squeeze(train_y) ) )  )
     preds = gbm.predict(test_x, raw_score=True)
-    score_test = np.sqrt( np.mean (np.square(preds-np.squeeze(test_y) ) )  )
+    score_test = np.mean (np.square(preds-np.squeeze(test_y) ) )
     return gbm, (None, None, score_test)

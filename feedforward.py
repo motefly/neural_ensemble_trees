@@ -1,6 +1,7 @@
 import numpy as np
 import tensorflow as tf
 from tensorflow.python.framework import ops
+import math
 tf.set_random_seed(42)
 
 
@@ -90,7 +91,7 @@ def define_forward_pass(X, init_parameters, n_inputs, HL1N, HL2N, sigma=1.0,
 
 def run_neural_net(data, init_parameters=None, HL1N=20, HL2N=10, n_layers=2,
                    verbose=True, learning_rate=0.001, forest=None, keep_sparse=True,
-                   batchsize=32, n_iterations=100):
+                   batchsize=32, n_iterations=30):
     """
     Trains / evaluates a Multilayer perceptron (MLP), potentially with a prespecified
     weight matrix initialisation.
@@ -110,6 +111,8 @@ def run_neural_net(data, init_parameters=None, HL1N=20, HL2N=10, n_layers=2,
     - n_iterations: Number of training epochs
     """
 
+    import pdb
+    pdb.set_trace()
     if verbose:
         print("training MLP...")
     XTrain, XValid, XTest, YTrain, YValid, YTest = data
@@ -157,19 +160,21 @@ def run_neural_net(data, init_parameters=None, HL1N=20, HL2N=10, n_layers=2,
                 # import pdb
                 # pdb.set_trace()
 
-            pred_train = sess.run(prediction, feed_dict={X: XTrain, Y: YTrain})
-            pred_valid = sess.run(prediction, feed_dict={X: XValid, Y: YValid})
-            pred_test = sess.run(prediction, feed_dict={X: XTest, Y: YTest})
+            pred_train = EvalTestset(sess, X, Y, XTrain, YTrain, prediction)
+            pred_test = EvalTestset(sess, X, Y, XTest, YTest, prediction)
+            # pred_train = sess.run(prediction, feed_dict={X: XTrain, Y: YTrain})
+            pred_valid = sess.run(prediction, feed_dict={X: XValid[:128], Y: YValid[:128]})
+            # pred_test = sess.run(prediction, feed_dict={X: XTest, Y: YTest})
             pred_test_store.append(pred_test)
 
             diff_train = YTrain - pred_train
-            RMSE_train.append( np.sqrt(np.mean(np.square(diff_train ) ) ) )
+            RMSE_train.append(np.mean(np.square(diff_train ) ) )
 
             diff_valid = YValid - pred_valid
-            RMSE_valid.append( np.sqrt(np.mean(np.square(diff_valid ) ) ) )
+            RMSE_valid.append(np.mean(np.square(diff_valid ) ) ) 
 
             diff_test = YTest - pred_test
-            RMSE_test.append( np.sqrt(np.mean(np.square(diff_test ) ) ) )
+            RMSE_test.append( np.mean(np.square(diff_test ) ) ) 
             if verbose:
                 printstring = "Epoch: {}, Train/Valid RMSE: {}"\
                         .format(i, np.array([RMSE_train[-1], RMSE_valid[-1]]))
@@ -194,14 +199,32 @@ def run_neural_net(data, init_parameters=None, HL1N=20, HL2N=10, n_layers=2,
 
         # compute RF validation performance
         RF_predictions_valid = forest.predict(XValid)
-        RF_score_valid = np.sqrt( np.mean (np.square(RF_predictions_valid-np.squeeze(YValid) ) )  )
+        RF_score_valid = np.mean (np.square(RF_predictions_valid-np.squeeze(YValid) ) )
 
         # if RF validation performance is better than for neural model
         if RF_score_valid < RMSE_valid[amin]:
             # Case Yes -- return forest score / predictions
             RF_predictions_test = forest.predict(XTest)
-            RF_score_test = np.sqrt( np.mean (np.square(RF_predictions_test-np.squeeze(YTest) ) )  )
+            RF_score_test =  np.mean (np.square(RF_predictions_test-np.squeeze(YTest) ) ) 
             return RF_score_test, RF_predictions_test
         else:
             # Case No -- return tuned model score / predictions
             return RMSE_test[amin], pred_test_store[amin]
+
+def EvalTestset(sess, X, Y_, test_x, test_y, prediction, test_batch_size = 128):
+    tst_len = len(test_x)
+    tst_batch_num = math.ceil(tst_len / test_batch_size)
+    Loss_tst = 0.0
+    Acc_tst = 0.0
+    y_preds = []
+    for jdx in range(tst_batch_num):
+        tst_st = jdx * test_batch_size
+        tst_ed = min(tst_len, tst_st + test_batch_size)
+        feed_dict_tst = {
+            X: test_x[tst_st:tst_ed], 
+            Y_: test_y[tst_st:tst_ed],
+        }
+        pred_train = sess.run(prediction, feed_dict=feed_dict_tst)
+        y_preds.append(pred_train)
+    y_preds = np.concatenate(y_preds, 0)
+    return y_preds

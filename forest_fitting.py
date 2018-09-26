@@ -33,9 +33,9 @@ def fit_random_forest(data, ntrees=30, depth=6, random_state=42, verbose=False):
     RF_predictions_test = rf.predict(XTest)
 
     # compute RMSE metrics for predictions
-    RF_score_train = np.sqrt( np.mean (np.square(RF_predictions_train-np.squeeze(YTrain) ) )  )
-    RF_score_valid = np.sqrt( np.mean (np.square(RF_predictions_valid-np.squeeze(YValid) ) )  )
-    RF_score_test = np.sqrt( np.mean (np.square(RF_predictions_test-np.squeeze(YTest) ) )  )
+    RF_score_train = np.mean (np.square(RF_predictions_train-np.squeeze(YTrain) ) )
+    RF_score_valid = np.mean (np.square(RF_predictions_valid-np.squeeze(YValid) ) )
+    RF_score_test = np.mean (np.square(RF_predictions_test-np.squeeze(YTest) ) ) 
     if verbose:
         print ("RF score (RMSE) train: ", RF_score_train)
         print ("RF score (RMSE) valid: ", RF_score_valid)

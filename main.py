@@ -21,7 +21,7 @@ def neural_random_forest(dataset_name="mpg", tree_model='lightgbm'):
     - a neural random forest (method 2)
     """
     # pick a regression dataset
-    dataset_names = ["boston", "concrete", "crimes", "fires", "mpg", "wisconsin", "protein"]
+    dataset_names = ["boston", "concrete", "crimes", "fires", "mpg", "wisconsin", "protein", "yahoo"]
     if not dataset_name or dataset_name not in dataset_names:
         dataset_name = "mpg"  # set as default dataset
 
@@ -34,15 +34,15 @@ def neural_random_forest(dataset_name="mpg", tree_model='lightgbm'):
     # XTrain, XValid, XTest, YTrain, YValid, YTest
 
     # forest hyperparameters
-    ntrees = 30
+    ntrees = 100
     depth = 6
     tree_lr = 0.15
-    maxleaf = 8
-    mindata = 10
+    maxleaf = 100
+    mindata = 40
 
     # train a random regression forest model
     if tree_model == 'randomforest':
-        model, model_results = fit_random_forest(data, ntrees, depth, verbose=False)
+        model, model_results = fit_random_forest(data, ntrees, depth, verbose=True)
     else:
         model, model_results = TrainGBDT(data, lr=tree_lr, num_trees=ntrees, maxleaf=maxleaf, mindata=mindata)
 
@@ -53,7 +53,7 @@ def neural_random_forest(dataset_name="mpg", tree_model='lightgbm'):
     HL1N, HL2N = init_parameters[2].shape
 
     # train a standard 2-layer MLP with HL1N / HL2N hidden neurons in layer 1 / 2.
-    NN2,_ = run_neural_net(data, init_parameters=None, HL1N=HL1N, HL2N=HL2N, verbose=False)
+    NN2,_ = run_neural_net(data, init_parameters=None, HL1N=HL1N, HL2N=HL2N, verbose=True)
 
     # # train many small networks individually, initial weights from a decision tree (method 1)
     # method1_full,_  = individually_trained_networks(data, ntrees, depth, keep_sparse=False, verbose=False, tree_model=tree_model)

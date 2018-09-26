@@ -17,7 +17,7 @@ def load_data():
 
     for i, row in enumerate(data):
         Y[i] = row[0]
-        X[i,:] = row[1:]
+        X[i,:] = row[1:]    
 
     return X,Y
 

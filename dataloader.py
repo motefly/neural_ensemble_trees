@@ -1,5 +1,7 @@
 import numpy as np
 
+root = '../TabularNN/Data'
+
 def load_data(dataset_name:str, seed=42):
     """
     Loads a dataset and returns it split into train/valid/test parts.
@@ -25,6 +27,14 @@ def load_data(dataset_name:str, seed=42):
     elif dataset_name == "protein":
         import preprocessing.preprocess_protein as protein
         X,Y = protein.load_data()
+        return X[:-10000],X[-10000:],X[-10000:],Y[:-10000],Y[-10000:],Y[-10000:]
+    elif dataset_name == 'yahoo':
+        print('loading YAHOO...')
+        trn_x = np.load(root+"/YahooC14/set1.train.features.npy")
+        trn_y = np.load(root+"/YahooC14/set1.train.labels.npy")
+        vld_x = np.load(root+"/YahooC14/set1.valid.features.npy")
+        vld_y = np.load(root+"/YahooC14/set1.valid.labels.npy")
+        return trn_x, vld_x, vld_x, trn_y, vld_y, vld_y
     else:
         raise NameError("Dataset name not recognised: " + dataset_name)
     return split_data(X,Y,seed)
