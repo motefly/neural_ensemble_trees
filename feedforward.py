@@ -163,21 +163,21 @@ def run_neural_net(data, init_parameters=None, HL1N=20, HL2N=10, n_layers=2,
             pred_train = EvalTestset(sess, X, Y, XTrain, YTrain, prediction)
             pred_test = EvalTestset(sess, X, Y, XTest, YTest, prediction)
             # pred_train = sess.run(prediction, feed_dict={X: XTrain, Y: YTrain})
-            pred_valid = sess.run(prediction, feed_dict={X: XValid[:128], Y: YValid[:128]})
+            # pred_valid = sess.run(prediction, feed_dict={X: XValid[:128], Y: YValid[:128]})
             # pred_test = sess.run(prediction, feed_dict={X: XTest, Y: YTest})
             pred_test_store.append(pred_test)
 
             diff_train = YTrain - pred_train
             RMSE_train.append(np.mean(np.square(diff_train ) ) )
 
-            diff_valid = YValid - pred_valid
-            RMSE_valid.append(np.mean(np.square(diff_valid ) ) ) 
+            # diff_valid = YValid - pred_valid
+            # RMSE_valid.append(np.mean(np.square(diff_valid ) ) ) 
 
             diff_test = YTest - pred_test
             RMSE_test.append( np.mean(np.square(diff_test ) ) ) 
             if verbose:
-                printstring = "Epoch: {}, Train/Valid RMSE: {}"\
-                        .format(i, np.array([RMSE_train[-1], RMSE_valid[-1]]))
+                printstring = "Epoch: {}, Train/Test RMSE: {}"\
+                        .format(i, np.array([RMSE_train[-1], RMSE_test[-1]]))
                 print (printstring)
 
 
